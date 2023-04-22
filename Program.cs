@@ -9,6 +9,73 @@ namespace xml
 {
     internal class Program
     {
+        public static void print_xml(string filename)
+        {
+            XmlTextReader reader = null;
+
+            try
+            {
+
+                
+                reader = new XmlTextReader(filename);
+                reader.WhitespaceHandling = WhitespaceHandling.None;
+                string counter = "";
+                while (reader.Read())
+                {
+
+                    switch (reader.NodeType)
+                    {
+                        case XmlNodeType.Element:
+                            Console.Write(counter);
+                            Console.WriteLine("<{0}>", reader.Name);
+                            counter+="  ";
+                            break;
+                        case XmlNodeType.Text:
+                            Console.Write(counter);
+                            Console.WriteLine(reader.Value);
+                            break;
+                        case XmlNodeType.CDATA:
+                            Console.Write(counter);
+                            Console.WriteLine("<![CDATA[{0}]]>", reader.Value);
+                            break;
+                        case XmlNodeType.ProcessingInstruction:
+                            Console.Write(counter);
+                            Console.WriteLine("<?{0} {1}?>", reader.Name, reader.Value);
+                            break;
+                        case XmlNodeType.Comment:
+                            Console.Write(counter);
+                            Console.WriteLine("<!--{0}-->", reader.Value);
+                            break;
+                        case XmlNodeType.XmlDeclaration:
+                            Console.Write(counter);
+                            Console.WriteLine("<?xml version='1.0'?>");
+                            break;
+                        case XmlNodeType.Document:
+                            Console.Write(counter);
+                            break;
+                        case XmlNodeType.DocumentType:
+                            Console.Write(counter);
+                            Console.WriteLine("<!DOCTYPE {0} [{1}]", reader.Name, reader.Value);
+                            break;
+                        case XmlNodeType.EntityReference:
+                            Console.Write(counter);
+                            Console.WriteLine(reader.Name);
+                            break;
+                        case XmlNodeType.EndElement:
+                            counter = counter.Remove(0, 2);
+                            Console.Write(counter);
+                            Console.WriteLine("</{0}>", reader.Name);
+                            break;
+                    }
+                }
+            }
+
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
         static void Main(string[] args)
         {
             XmlTextWriter Wr = null;
@@ -84,7 +151,12 @@ namespace xml
 
             Wr.WriteEndElement();
             Wr.Close();
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine("XML файл згенеровано");
+            Console.WriteLine("");
+            Console.WriteLine("вивід:");
+
+            print_xml("auto.xml");
             Console.ReadKey();
         }
     }
